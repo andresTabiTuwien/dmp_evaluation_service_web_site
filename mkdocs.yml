@@ -1,0 +1,60 @@
+site_name: DMP Evaluation Service
+site_description: Documentation and simple web UI for the DMP evaluation service
+site_url: https://example.com
+repo_url: https://github.com/OSTrails/DMP-Evaluation-Service
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+
+extra:
+  # 👇 Change this to your API’s base URL (dev/prod)
+  api_base_url: "http://localhost:8080"
+  contact_email: "you@example.com"
+
+plugins:
+  - search
+  - macros
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_javascript:
+  - assets/javascripts/config.js
+  - assets/javascripts/utils.js
+  - assets/javascripts/benchmarks.js
+  - assets/javascripts/evaluate.js
+  - assets/javascripts/status.js
+  - assets/javascripts/main.js
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Evaluate: evaluate.md
+  - Status: status.md
+  - API: api.md
+  - About: about.md
