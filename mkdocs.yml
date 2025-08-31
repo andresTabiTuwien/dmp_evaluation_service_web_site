@@ -12,15 +12,20 @@ theme:
     - search.suggest
     - search.highlight
     - content.code.copy
+    - content.tabs.link
   palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: indigo
-      accent: indigo
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: indigo
-      accent: indigo
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Dark mode
+      primary: deep orange
+      accent: deep purple
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Light mode
+      primary: deep orange
+      accent: deep purple
 
 extra:
   # 👇 Change this to your API’s base URL (dev/prod)
@@ -36,17 +41,23 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - pymdownx.details
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
 
 extra_javascript:
   - assets/javascripts/config.js
   - assets/javascripts/utils.js
   - assets/javascripts/benchmarks.js
   - assets/javascripts/evaluate.js
-  - assets/javascripts/status.js
+  - assets/javascripts/status_lists.js
   - assets/javascripts/main.js
 
 extra_css:
@@ -55,6 +66,5 @@ extra_css:
 nav:
   - Home: index.md
   - Evaluate: evaluate.md
-  - Status: status.md
+  - Benchmarks / metrics / tests: status.md
   - API: api.md
-  - About: about.md

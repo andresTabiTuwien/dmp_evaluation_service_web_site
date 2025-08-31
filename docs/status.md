@@ -1,13 +1,24 @@
 # Service Status
 
-# Service Status
+Browse what the service exposes. Each tab fetches and lists items as cards.
 
-Quick check to see if the service is reachable.
-It calls: `{{ config.extra.api_base_url }}/benchmarks/list` and shows a summary.
+=== "Benchmarks"
+    <div class="tab-tools">
+      <button id="toggle-benchmarks" class="md-button">Hide list</button>
+      <span id="status-benchmarks-status" style="margin-left:.5rem;"></span>
+    </div>
+    <div id="status-benchmarks-grid" class="cards"></div>
 
-<form id="form-health">
-  <button class="md-button md-button--primary" type="submit">Check health</button>
-</form>
+=== "Metrics"
+    <div class="tab-tools">
+      <button id="toggle-metrics" class="md-button">Hide list</button>
+      <span id="status-metrics-status" style="margin-left:.5rem;"></span>
+    </div>
+    <div id="status-metrics-grid" class="cards"></div>
 
-<div id="health-status" style="margin-top:1rem;"></div>
-<div id="health-result" style="margin-top:1rem;"></div>
+=== "Tests"
+    <div class="tab-tools">
+      <button id="toggle-tests" class="md-button">Show list</button>
+      <span id="status-tests-status" style="margin-left:.5rem;"></span>
+    </div>
+    <div id="status-tests-grid" class="cards"></div>
