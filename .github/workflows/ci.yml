@@ -25,5 +25,14 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install mkdocs-material
+      - run: | 
+          pip install mkdocs-material
+          pip install 'mkdocs-material>=9.5' pymdown-extensions
       - run: mkdocs gh-deploy --force 
+
+      - name: Build (prod)
+        run: mkdocs build --strict -f mkdocs.prod.yml
+
+      - name: Deploy to GitHub Pages
+        run: mkdocs gh-deploy --force -f mkdocs.prod.yml
+
