@@ -34,7 +34,6 @@ extra:
 
 plugins:
   - search
-  - macros
 
 markdown_extensions:
   - admonition
