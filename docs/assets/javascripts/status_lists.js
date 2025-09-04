@@ -157,29 +157,52 @@ async function fetchList(url) {
 async function loadBenchmarksList() {
   const statusEl = document.getElementById('status-benchmarks-status');
   const gridEl = document.getElementById('status-benchmarks-grid');
-  if (!gridEl) return;
+  const tableEl = document.getElementById('benchmarks-table');    
+  if (!tableEl) return;
   try {
     statusEl.textContent = 'Loading benchmarks…';
     const list = await fetchList(window.ENDPOINTS.LIST_BENCHMARKS);
-    console.log("the list of benchmarks ", list)
-    const grid = document.getElementById('status-benchmarks-grid');
-    cardGrid(
-      grid,
-      list,
-      (b) => `
-    <h3 class="card-title">${escapeHtml(b.title || 'Untitled benchmark')}</h3>
-    <p class="card-meta"><strong>ID:</strong> <code>${escapeHtml(b.benchmarkId || '')}</code>
-    ${b.version ? badge('v' + b.version, 'muted') : ''} ${b.status ? badge(b.status, (String(b.status).toUpperCase() === 'ACTIVE') ? 'ok' : 'warn') : ''}</p>
-  `,
-      (b) => `
-    ${b.description ? `<p>${escapeHtml(b.description)}</p>` : ''}
-    ${Array.isArray(b.hasAssociatedMetric) && b.hasAssociatedMetric.length ? `<p><strong>Metrics:</strong> ${b.hasAssociatedMetric.map(x => `<code>${escapeHtml(x)}</code>`).join(', ')}</p>` : ''}
-    <details><summary>Raw</summary><pre><code class="language-json">${escapeHtml(JSON.stringify(b, null, 2))}</code></pre></details>
-  `
-    );
-    renderBenchmarks(list, gridEl);
-    statusEl.textContent = `Found ${list.length} benchmark(s).`;
-    setupTabToggle('toggle-benchmarks', 'status-benchmarks-grid');
+    console.log("list of benchmarks: ", list)
+
+    // Build the table
+    const { dataTable, escapeHtml, badge } = window.Components;
+
+    dataTable(tableEl, list, [
+      {
+        key: 'title',
+        title: 'Title',
+        sortable: true,
+        value: (m) => escapeHtml(m.title || '')
+      },
+      {
+        key: 'version',
+        title: 'Version',
+        sortable: true,
+        value: (m) => escapeHtml(m.version || '')
+      },
+      {
+        key: 'status',
+        title: 'Status',
+        sortable: true,
+        value: (m) => m.status
+          ? badge(m.status, String(m.status).toUpperCase() === 'ACTIVE' ? 'ok' : 'warn')
+          : ''
+      },
+      {
+        key: 'description',
+        title: 'Description',
+        sortable: false,
+        value: (m) => m.description
+          ? `<div class="wrap-text">${escapeHtml(m.description)}</div>`
+          : ''
+      }
+    ], {
+      searchable: true,
+      paginated: true,
+      pageSize: 10
+    });
+
+    statusEl.textContent = `Found ${list.length} metric(s).`;
   } catch (err) {
     statusEl.innerHTML = `<span class="err">Error: ${escapeHtml(err.message)}</span>`;
   }
@@ -241,6 +264,7 @@ async function loadMetricsList() {
     // If you kept the old cards grid in the HTML, make sure it stays hidden:
     //if (gridEl) gridEl.style.display = 'none';
 
+    /*
     const toggleBtn = document.getElementById('metrics-view-toggle');
     if (toggleBtn && gridEl) {
       let mode = 'table'; // or 'cards'
@@ -259,7 +283,7 @@ async function loadMetricsList() {
           mode = 'table';
         }
       });
-    }
+    }*/
   } catch (err) {
     statusEl.innerHTML = `<span class="err">Error: ${window.Components.escapeHtml(err.message)}</span>`;
   }

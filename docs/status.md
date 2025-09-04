@@ -4,9 +4,10 @@ Browse what the service exposes. Each tab fetches and lists items in a table.
 
 === "Benchmarks"
     <div class="tab-tools">
-      <button id="toggle-benchmarks" class="md-button">Hide list</button>
+      <!--<button id="toggle-benchmarks" class="md-button">Hide list</button> -->
       <span id="status-benchmarks-status" style="margin-left:.5rem;"></span>
     </div>
+    <div id="benchmarks-table"></div>
     <div id="status-benchmarks-grid" class="cards"></div>
 
 === "Metrics"
