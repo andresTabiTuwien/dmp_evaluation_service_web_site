@@ -19,14 +19,14 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Dark mode
-      primary: deep orange
-      accent: deep purple
+      primary: blue
+      accent: grey
     - scheme: default
       toggle:
         icon: material/weather-night
         name: Light mode
-      primary: deep orange
-      accent: deep purple
+      primary: blue
+      accent: grey
 
 extra:
   # 👇 Change this to your API’s base URL (dev/prod)
@@ -55,6 +55,7 @@ markdown_extensions:
 extra_javascript:
   - assets/javascripts/config.js
   - assets/javascripts/utils.js
+  - assets/javascripts/components.js 
   - assets/javascripts/benchmarks.js
   - assets/javascripts/evaluate.js
   - assets/javascripts/status_lists.js
@@ -66,5 +67,5 @@ extra_css:
 nav:
   - Home: index.md
   - Evaluate: evaluate.md
-  - Benchmarks / metrics / tests: status.md
+  - List of Entities: status.md
   - API: api.md

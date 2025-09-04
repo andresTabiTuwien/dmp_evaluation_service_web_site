@@ -1,4 +1,5 @@
 // status_lists.js  — collapsible tabs + expandable cards
+const { cardGrid, dataTable } = window.Components;
 
 /* ---------- small utils ---------- */
 function escapeHtml(s) {
@@ -9,10 +10,10 @@ function escapeHtml(s) {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 }
-function isUrl(v){ return typeof v === 'string' && /^https?:\/\//i.test(v); }
-function linkOrCode(v){ const s=String(v||''); return isUrl(s)? `<a href="${escapeHtml(s)}" target="_blank" rel="noopener">${escapeHtml(s)}</a>`:`<code>${escapeHtml(s)}</code>`; }
-function badge(text, variant='muted'){ const cls = variant==='ok'?'badge--ok':(variant==='warn'?'badge--warn':'badge--muted'); return `<span class="badge ${cls}">${escapeHtml(String(text))}</span>`; }
-function chips(title, items){ if(!Array.isArray(items)||!items.length) return ''; const chipsHtml=items.map(v=>`<span class="chip">${linkOrCode(v)}</span>`).join(''); return `<div><strong>${escapeHtml(title)}:</strong><div class="chips">${chipsHtml}</div></div>`; }
+function isUrl(v) { return typeof v === 'string' && /^https?:\/\//i.test(v); }
+function linkOrCode(v) { const s = String(v || ''); return isUrl(s) ? `<a href="${escapeHtml(s)}" target="_blank" rel="noopener">${escapeHtml(s)}</a>` : `<code>${escapeHtml(s)}</code>`; }
+function badge(text, variant = 'muted') { const cls = variant === 'ok' ? 'badge--ok' : (variant === 'warn' ? 'badge--warn' : 'badge--muted'); return `<span class="badge ${cls}">${escapeHtml(String(text))}</span>`; }
+function chips(title, items) { if (!Array.isArray(items) || !items.length) return ''; const chipsHtml = items.map(v => `<span class="chip">${linkOrCode(v)}</span>`).join(''); return `<div><strong>${escapeHtml(title)}:</strong><div class="chips">${chipsHtml}</div></div>`; }
 
 function attachCardToggle(card) {
   const toggle = () => card.classList.toggle('open');
@@ -36,8 +37,8 @@ function renderBenchmarks(list, gridEl) {
   list.forEach(b => {
     const title = b.title || 'Untitled benchmark';
     const id = b.benchmarkId || '';
-    const versionBadg = b.version ? badge(`v${b.version}`,'muted') : '';
-    const statusBadg = b.status ? badge(b.status, String(b.status).toUpperCase()==='ACTIVE'?'ok':'warn') : '';
+    const versionBadg = b.version ? badge(`v${b.version}`, 'muted') : '';
+    const statusBadg = b.status ? badge(b.status, String(b.status).toUpperCase() === 'ACTIVE' ? 'ok' : 'warn') : '';
 
     const card = document.createElement('div');
     card.className = 'card clickable';
@@ -74,8 +75,8 @@ function renderMetrics(list, gridEl) {
   list.forEach(m => {
     const title = m.title || 'Untitled metric';
     const id = m.id || '';
-    const versionBadg = m.version ? badge(`v${m.version}`,'muted') : '';
-    const statusBadg = m.status ? badge(m.status, String(m.status).toUpperCase()==='ACTIVE'?'ok':'warn') : '';
+    const versionBadg = m.version ? badge(`v${m.version}`, 'muted') : '';
+    const statusBadg = m.status ? badge(m.status, String(m.status).toUpperCase() === 'ACTIVE' ? 'ok' : 'warn') : '';
 
     const card = document.createElement('div');
     card.className = 'card clickable';
@@ -112,9 +113,9 @@ function renderTests(list, gridEl) {
   list.forEach(t => {
     const title = t.title || 'Untitled test';
     const id = t.id || '';
-    const versionBadg = t.version ? badge(`v${t.version}`,'muted') : '';
-    const licenseBadg = t.license ? badge(t.license,'muted') : '';
-    const typeBadg = t.type ? badge(t.type,'ok') : '';
+    const versionBadg = t.version ? badge(`v${t.version}`, 'muted') : '';
+    const licenseBadg = t.license ? badge(t.license, 'muted') : '';
+    const typeBadg = t.type ? badge(t.type, 'ok') : '';
 
     const card = document.createElement('div');
     card.className = 'card clickable';
@@ -133,7 +134,7 @@ function renderTests(list, gridEl) {
         ${t.repository ? `<p><strong>Repository:</strong> ${linkOrCode(t.repository)}</p>` : ''}
         ${t.theme ? `<p><strong>Theme:</strong> ${escapeHtml(t.theme)}</p>` : ''}
         ${t.keyword ? `<p><strong>Keyword:</strong> ${escapeHtml(t.keyword)}</p>` : ''}
-        ${(t.evaluator || t.functionEvaluator) ? `<p><strong>Evaluator:</strong> ${escapeHtml(t.evaluator||'')} ${t.functionEvaluator ? ` — <code>${escapeHtml(t.functionEvaluator)}</code>` : ''}</p>` : ''}
+        ${(t.evaluator || t.functionEvaluator) ? `<p><strong>Evaluator:</strong> ${escapeHtml(t.evaluator || '')} ${t.functionEvaluator ? ` — <code>${escapeHtml(t.functionEvaluator)}</code>` : ''}</p>` : ''}
         ${t.metricImplemented ? `<p><strong>Metric implemented:</strong> <code>${escapeHtml(t.metricImplemented)}</code></p>` : ''}
         <details><summary>Raw</summary>
           <pre><code class="language-json">${escapeHtml(JSON.stringify(t, null, 2))}</code></pre>
@@ -155,11 +156,27 @@ async function fetchList(url) {
 
 async function loadBenchmarksList() {
   const statusEl = document.getElementById('status-benchmarks-status');
-  const gridEl   = document.getElementById('status-benchmarks-grid');
+  const gridEl = document.getElementById('status-benchmarks-grid');
   if (!gridEl) return;
   try {
     statusEl.textContent = 'Loading benchmarks…';
     const list = await fetchList(window.ENDPOINTS.LIST_BENCHMARKS);
+    console.log("the list of benchmarks ", list)
+    const grid = document.getElementById('status-benchmarks-grid');
+    cardGrid(
+      grid,
+      list,
+      (b) => `
+    <h3 class="card-title">${escapeHtml(b.title || 'Untitled benchmark')}</h3>
+    <p class="card-meta"><strong>ID:</strong> <code>${escapeHtml(b.benchmarkId || '')}</code>
+    ${b.version ? badge('v' + b.version, 'muted') : ''} ${b.status ? badge(b.status, (String(b.status).toUpperCase() === 'ACTIVE') ? 'ok' : 'warn') : ''}</p>
+  `,
+      (b) => `
+    ${b.description ? `<p>${escapeHtml(b.description)}</p>` : ''}
+    ${Array.isArray(b.hasAssociatedMetric) && b.hasAssociatedMetric.length ? `<p><strong>Metrics:</strong> ${b.hasAssociatedMetric.map(x => `<code>${escapeHtml(x)}</code>`).join(', ')}</p>` : ''}
+    <details><summary>Raw</summary><pre><code class="language-json">${escapeHtml(JSON.stringify(b, null, 2))}</code></pre></details>
+  `
+    );
     renderBenchmarks(list, gridEl);
     statusEl.textContent = `Found ${list.length} benchmark(s).`;
     setupTabToggle('toggle-benchmarks', 'status-benchmarks-grid');
@@ -170,22 +187,87 @@ async function loadBenchmarksList() {
 
 async function loadMetricsList() {
   const statusEl = document.getElementById('status-metrics-status');
-  const gridEl   = document.getElementById('status-metrics-grid');
-  if (!gridEl) return;
+  const gridEl = document.getElementById('status-metrics-grid');   // optional/unused
+  const tableEl = document.getElementById('metrics-table');         // 👈 new
+  if (!tableEl) return;
+
   try {
     statusEl.textContent = 'Loading metrics…';
-    const list = await fetchList(window.ENDPOINTS.LIST_METRICS);
-    renderMetrics(list, gridEl);
+    const resp = await fetch(window.ENDPOINTS.LIST_METRICS);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const list = Array.isArray(data) ? data : (data.items || data.results || []);
+
+    // Build the table
+    const { dataTable, escapeHtml, badge } = window.Components;
+
+    dataTable(tableEl, list, [
+      {
+        key: 'title',
+        title: 'Title',
+        sortable: true,
+        value: (m) => escapeHtml(m.title || '')
+      },
+      {
+        key: 'version',
+        title: 'Version',
+        sortable: true,
+        value: (m) => escapeHtml(m.version || '')
+      },
+      {
+        key: 'status',
+        title: 'Status',
+        sortable: true,
+        value: (m) => m.status
+          ? badge(m.status, String(m.status).toUpperCase() === 'ACTIVE' ? 'ok' : 'warn')
+          : ''
+      },
+      {
+        key: 'description',
+        title: 'Description',
+        sortable: false,
+        value: (m) => m.description
+          ? `<div class="wrap-text">${escapeHtml(m.description)}</div>`
+          : ''
+      }
+    ], {
+      searchable: true,
+      paginated: true,
+      pageSize: 10
+    });
+
     statusEl.textContent = `Found ${list.length} metric(s).`;
-    setupTabToggle('toggle-metrics', 'status-metrics-grid');
+
+    // If you kept the old cards grid in the HTML, make sure it stays hidden:
+    //if (gridEl) gridEl.style.display = 'none';
+
+    const toggleBtn = document.getElementById('metrics-view-toggle');
+    if (toggleBtn && gridEl) {
+      let mode = 'table'; // or 'cards'
+      toggleBtn.addEventListener('click', () => {
+        if (mode === 'table') {
+          // render cards into gridEl using your existing renderMetrics(list, gridEl)
+          renderMetrics(list, gridEl);
+          gridEl.style.display = '';
+          tableEl.style.display = 'none';
+          toggleBtn.textContent = 'View as table';
+          mode = 'cards';
+        } else {
+          tableEl.style.display = '';
+          gridEl.style.display = 'none';
+          toggleBtn.textContent = 'View as cards';
+          mode = 'table';
+        }
+      });
+    }
   } catch (err) {
-    statusEl.innerHTML = `<span class="err">Error: ${escapeHtml(err.message)}</span>`;
+    statusEl.innerHTML = `<span class="err">Error: ${window.Components.escapeHtml(err.message)}</span>`;
   }
 }
 
 async function loadTestsList() {
   const statusEl = document.getElementById('status-tests-status');
-  const gridEl   = document.getElementById('status-tests-grid');
+  const gridEl = document.getElementById('status-tests-grid');
   if (!gridEl) return;
   try {
     statusEl.textContent = 'Loading tests…';

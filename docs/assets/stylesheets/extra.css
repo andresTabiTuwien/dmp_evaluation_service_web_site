@@ -1,5 +1,13 @@
-#evaluate-status .ok, #health-status .ok { font-weight: 600; }
-#evaluate-status .err, #health-status .err { color: var(--md-code-hl-number-color); font-weight: 600; }
+#evaluate-status .ok,
+#health-status .ok {
+  font-weight: 600;
+}
+
+#evaluate-status .err,
+#health-status .err {
+  color: var(--md-code-hl-number-color);
+  font-weight: 600;
+}
 
 .cards {
   display: grid;
@@ -7,6 +15,7 @@
   gap: 1rem;
   margin-bottom: 1rem;
 }
+
 .card {
   border: 1px solid var(--md-default-fg-color--lightest);
   border-radius: 0.75rem;
@@ -17,7 +26,9 @@
   max-width: 100%;
 }
 
-.cards.compact .card { padding: .75rem; }
+.cards.compact .card {
+  padding: .75rem;
+}
 
 .tab-tools {
   display: flex;
@@ -30,7 +41,10 @@
   cursor: pointer;
   transition: transform .05s ease, background-color .2s ease;
 }
-.card.clickable:hover { transform: translateY(-1px); }
+
+.card.clickable:hover {
+  transform: translateY(-1px);
+}
 
 .card-header {
   display: flex;
@@ -52,17 +66,26 @@
   user-select: none;
   font-size: 1.1rem;
   line-height: 1;
-  transform: rotate(-90deg); /* closed */
+  transform: rotate(-90deg);
+  /* closed */
   transition: transform .15s ease;
   opacity: .7;
 }
+
 .card.open .card-caret {
-  transform: rotate(0deg); /* open */
+  transform: rotate(0deg);
+  /* open */
   opacity: 1;
 }
 
-.card-body { display: none; margin-top: .5rem; }
-.card.open .card-body { display: block; }
+.card-body {
+  display: none;
+  margin-top: .5rem;
+}
+
+.card.open .card-body {
+  display: block;
+}
 
 
 
@@ -80,12 +103,26 @@
   margin-bottom: .25rem;
 }
 
-.badge--ok { border-color: var(--md-typeset-color); }
-.badge--warn { border-color: var(--md-code-hl-number-color); }
-.badge--muted { opacity: .8; }
+.badge--ok {
+  border-color: var(--md-typeset-color);
+}
+
+.badge--warn {
+  border-color: var(--md-code-hl-number-color);
+}
+
+.badge--muted {
+  opacity: .8;
+}
 
 /* Chips */
-.chips { display: flex; flex-wrap: wrap; gap: .35rem .5rem; margin-top: .25rem; }
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem .5rem;
+  margin-top: .25rem;
+}
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -96,5 +133,174 @@
   font-size: .8rem;
   text-decoration: none;
 }
-.chip code { font-size: .75rem; }
-.chip:hover { text-decoration: none; filter: brightness(1.05); }
+
+.chip code {
+  font-size: .75rem;
+}
+
+.chip:hover {
+  text-decoration: none;
+  filter: brightness(1.05);
+}
+
+
+/* Tables */
+/* Toolbar */
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: .5rem 0;
+}
+
+.table-toolbar .table-search {
+  padding: .35rem .5rem;
+  width: min(280px, 60%);
+}
+
+/* Table base */
+.nice-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.nice-table th,
+.nice-table td {
+  padding: .5rem .6rem;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  vertical-align: top;
+}
+
+.nice-table th {
+  user-select: none;
+}
+
+/* Header — use palette, sticky, subtle shadow (no duplicate header rule below!) */
+.nice-table thead th {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  font-weight: 600;
+  text-align: left;
+  padding: .6rem .8rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 2px solid var(--md-default-fg-color--lightest);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .15);
+}
+
+.nice-table thead th:first-child {
+  border-top-left-radius: .5rem;
+}
+
+.nice-table thead th:last-child {
+  border-top-right-radius: .5rem;
+}
+
+/* Sortable header hover (optional) */
+.nice-table thead th[style*="cursor: pointer"] {
+  transition: background-color .2s ease;
+}
+
+.nice-table thead th[style*="cursor: pointer"]:hover {
+  background-color: color-mix(in srgb, var(--md-primary-fg-color) 85%, black);
+}
+
+/* Row hover — tint with accent color for better feedback */
+.nice-table tbody tr:hover {
+  background: color-mix(in srgb, var(--md-accent-fg-color) 14%, transparent);
+}
+
+/* Wrap long description text nicely */
+.nice-table td .wrap-text {
+  white-space: normal;
+  /* allow line breaks */
+  word-break: break-word;
+  /* break long words if needed */
+  max-width: 50ch;
+  /* keeps column tidy; tweak as you like */
+}
+
+/* Badges & cards (you already have similar; keep or merge) */
+.badge {
+  display: inline-block;
+  font-size: .75rem;
+  line-height: 1;
+  padding: .25rem .5rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: .5rem;
+  font-weight: 600;
+  margin-right: .4rem;
+  margin-bottom: .25rem;
+}
+
+.badge--ok {
+  border-color: var(--md-typeset-color);
+}
+
+.badge--warn {
+  border-color: var(--md-code-hl-number-color);
+}
+
+.badge--muted {
+  opacity: .8;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: .75rem;
+  padding: 1rem;
+}
+
+.card.clickable {
+  cursor: pointer;
+  transition: transform .05s ease;
+}
+
+.card.clickable:hover {
+  transform: translateY(-1px);
+}
+
+.card-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.card-title {
+  margin: 0 0 .25rem 0;
+}
+
+.card-meta {
+  margin: 0;
+  font-size: .9rem;
+}
+
+.card-caret {
+  user-select: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  transform: rotate(-90deg);
+  transition: transform .15s ease;
+  opacity: .7;
+}
+
+.card.open .card-caret {
+  transform: rotate(0deg);
+  opacity: 1;
+}
+
+.card-body {
+  display: none;
+  margin-top: .5rem;
+}
+
+.card.open .card-body {
+  display: block;
+}

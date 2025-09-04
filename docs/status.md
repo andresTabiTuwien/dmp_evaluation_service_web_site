@@ -1,6 +1,6 @@
 # Service Status
 
-Browse what the service exposes. Each tab fetches and lists items as cards.
+Browse what the service exposes. Each tab fetches and lists items in a table.
 
 === "Benchmarks"
     <div class="tab-tools">
@@ -11,10 +11,11 @@ Browse what the service exposes. Each tab fetches and lists items as cards.
 
 === "Metrics"
     <div class="tab-tools">
-      <button id="toggle-metrics" class="md-button">Hide list</button>
+      <!-- <button id="metrics-view-toggle" class="md-button">View as cards</button>-->
       <span id="status-metrics-status" style="margin-left:.5rem;"></span>
     </div>
-    <div id="status-metrics-grid" class="cards"></div>
+    <div id="metrics-table"></div>
+    <div id="status-metrics-grid" class="cards" style="display:none;"></div> 
 
 === "Tests"
     <div class="tab-tools">
