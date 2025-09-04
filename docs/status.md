@@ -20,7 +20,8 @@ Browse what the service exposes. Each tab fetches and lists items in a table.
 
 === "Tests"
     <div class="tab-tools">
-      <button id="toggle-tests" class="md-button">Show list</button>
+      <!--<button id="toggle-tests" class="md-button">Show list</button>-->
       <span id="status-tests-status" style="margin-left:.5rem;"></span>
     </div>
+    <div id="tests-table"></div>
     <div id="status-tests-grid" class="cards"></div>

@@ -162,7 +162,6 @@ async function loadBenchmarksList() {
   try {
     statusEl.textContent = 'Loading benchmarks…';
     const list = await fetchList(window.ENDPOINTS.LIST_BENCHMARKS);
-    console.log("list of benchmarks: ", list)
 
     // Build the table
     const { dataTable, escapeHtml, badge } = window.Components;
@@ -292,13 +291,52 @@ async function loadMetricsList() {
 async function loadTestsList() {
   const statusEl = document.getElementById('status-tests-status');
   const gridEl = document.getElementById('status-tests-grid');
-  if (!gridEl) return;
+  const tableEl = document.getElementById('tests-table'); 
+  if (!tableEl) return;
   try {
     statusEl.textContent = 'Loading tests…';
     const list = await fetchList(window.ENDPOINTS.LIST_TESTS);
-    renderTests(list, gridEl);
+    console.log("the list of tests:", list)
+    // Build the table
+    const { dataTable, escapeHtml, badge } = window.Components;
+
+    dataTable(tableEl, list, [
+      {
+        key: 'title',
+        title: 'Title',
+        sortable: true,
+        value: (m) => escapeHtml(m.title || '')
+      },
+      {
+        key: 'version',
+        title: 'Version',
+        sortable: true,
+        value: (m) => escapeHtml(m.version || '')
+      },
+      {
+        key: 'status',
+        title: 'Status',
+        sortable: true,
+        value: (m) => m.status
+          ? badge(m.status, String(m.status).toUpperCase() === 'ACTIVE' ? 'ok' : 'warn')
+          : ''
+      },
+      {
+        key: 'description',
+        title: 'Description',
+        sortable: false,
+        value: (m) => m.description
+          ? `<div class="wrap-text">${escapeHtml(m.description)}</div>`
+          : ''
+      }
+    ], {
+      searchable: true,
+      paginated: true,
+      pageSize: 10
+    });
+    /*renderTests(list, gridEl);
     statusEl.textContent = `Found ${list.length} test(s).`;
-    setupTabToggle('toggle-tests', 'status-tests-grid');
+    setupTabToggle('toggle-tests', 'status-tests-grid');*/
   } catch (err) {
     statusEl.innerHTML = `<span class="err">Error: ${escapeHtml(err.message)}</span>`;
   }
