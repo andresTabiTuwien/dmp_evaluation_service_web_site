@@ -157,7 +157,7 @@ async function fetchList(url) {
 async function loadBenchmarksList() {
   const statusEl = document.getElementById('status-benchmarks-status');
   const gridEl = document.getElementById('status-benchmarks-grid');
-  const tableEl = document.getElementById('benchmarks-table');    
+  const tableEl = document.getElementById('benchmarks-table');
   if (!tableEl) return;
   try {
     statusEl.textContent = 'Loading benchmarks…';
@@ -216,6 +216,102 @@ async function loadMetricsList() {
   try {
     statusEl.textContent = 'Loading metrics…';
     const resp = await fetch(window.ENDPOINTS.LIST_METRICS);
+
+    const [metricsResp, testsResp] = await Promise.all([
+      fetch(window.ENDPOINTS.LIST_METRICS),
+      fetch(window.ENDPOINTS.LIST_TESTS)
+    ]);
+    if (!metricsResp.ok) throw new Error(`Metrics HTTP ${metricsResp.status}`);
+    if (!testsResp.ok) throw new Error(`Tests HTTP ${testsResp.status}`);
+
+    const metricsRaw = await metricsResp.json();
+    const testsRaw = await testsResp.json();
+
+    const metrics = Array.isArray(metricsRaw) ? metricsRaw : (metricsRaw.items || metricsRaw.results || []);
+    const tests = Array.isArray(testsRaw) ? testsRaw : (testsRaw.items || testsRaw.results || []);
+
+    // Build lookups: id -> title / endpointURL
+    const testTitleById = Object.create(null);
+    const testUrlById = Object.create(null);
+
+    tests.forEach(t => {
+      const id = t.id ?? t.key ?? t.slug;
+      if (!id) return;
+      testTitleById[id] = t.title || `Test ${id}`;
+      if (t.endpointURL) testUrlById[id] = t.endpointURL;
+    });
+
+    // Helpers
+    const { dataTable, escapeHtml, badge } = window.Components;
+    const extractId = (v) => {
+      const s = String(v ?? '');
+      // If it's a URL, take the last path segment; otherwise return as-is
+      const m = s.match(/\/([^\/?#]+)(?:[?#].*)?$/);
+      return m ? m[1] : s;
+    };
+
+    const renderTestChips = (arr) => {
+      const list = Array.isArray(arr) ? arr : [];
+      if (!list.length) return '';
+      return list.map(x => {
+        const id = extractId(x);
+        const title = testTitleById[id] || id;
+        const href = testUrlById[id];
+        const label = escapeHtml(title);
+        return href
+          ? `<a class="chip" href="${escapeHtml(href)}" target="_blank" rel="noopener">${label}</a>`
+          : `<span class="chip">${label}</span>`;
+      }).join(' ');
+    };
+
+    // Build the table
+    dataTable(tableEl, metrics, [
+      {
+        key: 'title',
+        title: 'Title',
+        sortable: true,
+        value: (m) => escapeHtml(m.title || '')
+      },
+      {
+        key: 'version',
+        title: 'Version',
+        sortable: true,
+        value: (m) => escapeHtml(m.version || '')
+      },
+      {
+        key: 'status',
+        title: 'Status',
+        sortable: true,
+        value: (m) => m.status
+          ? badge(m.status, String(m.status).toUpperCase() === 'ACTIVE' ? 'ok' : 'warn')
+          : ''
+      },
+      {
+        key: 'tests',
+        title: 'Tests',
+        sortable: false,
+        value: (m) => renderTestChips(m.testAssociated)
+      },
+      {
+        key: 'description',
+        title: 'Description',
+        sortable: false,
+        value: (m) => m.description
+          ? `<div class="wrap-text">${escapeHtml(m.description)}</div>`
+          : ''
+      }
+    ], {
+      searchable: true,
+      paginated: true,
+      pageSize: 10
+    });
+
+    statusEl.textContent = `Found ${metrics.length} metric(s).`;
+
+    if (gridEl) gridEl.style.display = 'none';
+
+    // previous development 
+    /*
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     const list = Array.isArray(data) ? data : (data.items || data.results || []);
@@ -258,7 +354,8 @@ async function loadMetricsList() {
       pageSize: 10
     });
 
-    statusEl.textContent = `Found ${list.length} metric(s).`;
+    statusEl.textContent = `Found ${list.length} metric(s).`; 
+    */
 
     // If you kept the old cards grid in the HTML, make sure it stays hidden:
     //if (gridEl) gridEl.style.display = 'none';
@@ -291,7 +388,7 @@ async function loadMetricsList() {
 async function loadTestsList() {
   const statusEl = document.getElementById('status-tests-status');
   const gridEl = document.getElementById('status-tests-grid');
-  const tableEl = document.getElementById('tests-table'); 
+  const tableEl = document.getElementById('tests-table');
   if (!tableEl) return;
   try {
     statusEl.textContent = 'Loading tests…';
@@ -334,6 +431,8 @@ async function loadTestsList() {
       paginated: true,
       pageSize: 10
     });
+
+    statusEl.textContent = `Found ${list.length} test(s).`;
     /*renderTests(list, gridEl);
     statusEl.textContent = `Found ${list.length} test(s).`;
     setupTabToggle('toggle-tests', 'status-tests-grid');*/
