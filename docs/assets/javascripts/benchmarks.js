@@ -20,7 +20,7 @@ async function populateSelect(url, selectId, promptText = 'Select…') {
     select.appendChild(prompt);
 
     list.forEach(item => {
-      const id = item.benchmarkId ?? item.id ;
+      const id = item.benchmarkId ?? item.identifier ;
       const title = item.title ?? item.name ?? (id ? `Item ${id}` : 'Untitled');
       if (!id) return;
       const opt = document.createElement('option');
