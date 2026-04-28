@@ -422,3 +422,29 @@
   opacity: .5;
   font-style: italic;
 }
+
+.eval-json-details {
+  margin-top: 1rem;
+}
+
+.eval-json-details summary {
+  cursor: pointer;
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: .55;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.eval-json-details summary::before {
+  content: '▶';
+  font-size: .6rem;
+  transition: transform .15s ease;
+}
+
+.eval-json-details[open] summary::before {
+  transform: rotate(90deg);
+}

@@ -21,12 +21,18 @@ async function handleResponse(resp, statusEl, resultEl, prettyRenderer) {
     if (pretty) resultEl.appendChild(pretty);
   }
 
+  const details = document.createElement('details');
+  details.className = 'eval-json-details';
+  const summary = document.createElement('summary');
+  summary.textContent = 'Raw JSON response';
   const pre = document.createElement('pre');
   const code = document.createElement('code');
   code.className = 'language-json';
   code.textContent = JSON.stringify(data, null, 2);
   pre.appendChild(code);
-  resultEl.appendChild(pre);
+  details.appendChild(summary);
+  details.appendChild(pre);
+  resultEl.appendChild(details);
 
   return data;
 }
