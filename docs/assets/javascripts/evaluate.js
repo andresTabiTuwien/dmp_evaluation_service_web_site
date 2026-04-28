@@ -66,55 +66,76 @@ function setupTestForm() {
   });
 }
 
-/**
- * Pretty renderer when the API returns a List<Evaluation>.
- * If your test/benchmark endpoints return slightly different shapes,
- * this renderer will still show something useful.
- */
+function _evalValueClass(val) {
+  if (!val) return 'neutral';
+  const v = val.toUpperCase();
+  if (v === 'PASS') return 'pass';
+  if (v === 'FAIL') return 'fail';
+  return 'neutral';
+}
+
+function _evalFormatValue(key, val) {
+  if (val === null || val === undefined || val === '') return '<em class="eval-empty">—</em>';
+  if (Array.isArray(val)) {
+    if (val.length === 0) return '<em class="eval-empty">—</em>';
+    return val.map(v => `<span class="chip">${Utils.escapeHtml(String(v))}</span>`).join(' ');
+  }
+  const str = String(val);
+  const lk = key.toLowerCase();
+  if (lk.includes('time') || lk.includes('date')) {
+    try { return Utils.escapeHtml(new Date(str).toLocaleString()); } catch (_) { /* fall through */ }
+  }
+  if (str.startsWith('http://') || str.startsWith('https://')) {
+    return `<a href="${Utils.escapeHtml(str)}" target="_blank" rel="noopener">${Utils.escapeHtml(str)}</a>`;
+  }
+  return Utils.escapeHtml(str);
+}
+
+function _evalFieldLabel(key) {
+  return key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()).trim();
+}
+
 function renderEvaluateArray(data) {
   const wrap = document.createElement('div');
-  wrap.className = 'cards';
+  wrap.className = 'eval-cards';
 
-  var arr = Array.isArray(data) ? data : (data?.results || [data]);
+  const arr = Array.isArray(data) ? data : (data?.results || [data]);
   if (!Array.isArray(arr) || arr.length === 0 || data === null) {
-    const empty = document.createElement('div');
-    empty.className = 'card';
-    empty.innerHTML = `<h3>Results</h3><p>No evaluations returned.</p>`;
-    wrap.appendChild(empty);
+    wrap.innerHTML = `<div class="eval-card"><p class="eval-empty">No evaluations returned.</p></div>`;
     return wrap;
   }
 
-  arr.forEach((ev, idx) => {
+  arr.forEach(ev => {
     const card = document.createElement('div');
-    card.className = 'card';
+    card.className = 'eval-card';
 
-    const pieces = [];
-    if (ev.id !== undefined) pieces.push(`<p><strong>ID:</strong> ${Utils.escapeHtml(String(ev.id))}</p>`);
-    if (ev.rule || ev.test || ev.benchmark) {
-      const label = ev.rule ? 'Rule' : (ev.test ? 'Test' : 'Benchmark');
-      const value = ev.rule ?? ev.test ?? ev.benchmark;
-      pieces.push(`<p><strong>${label}:</strong> ${Utils.escapeHtml(String(value))}</p>`);
-    }
-    if (ev.score !== undefined) pieces.push(`<p><strong>Score:</strong> ${ev.score}</p>`);
-    if (ev.grade !== undefined) pieces.push(`<p><strong>Grade:</strong> ${Utils.escapeHtml(String(ev.grade))}</p>`);
-    if (ev.summary) pieces.push(`<p><strong>Summary:</strong> ${Utils.escapeHtml(String(ev.summary))}</p>`);
+    const val = ev.value ? String(ev.value) : null;
+    const valHtml = val
+      ? `<span class="eval-grade eval-grade--${_evalValueClass(val)}">${Utils.escapeHtml(val)}</span>`
+      : '';
 
-    let issuesBlock = '';
-    if (Array.isArray(ev.issues) && ev.issues.length) {
-      const items = ev.issues.map(issue => {
-        const sec = issue.section ? `<em>${Utils.escapeHtml(issue.section)}</em>` : 'General';
-        const sev = issue.severity ? `<strong>[${Utils.escapeHtml(issue.severity)}]</strong>` : '';
-        const msg = issue.message ? Utils.escapeHtml(issue.message) : '';
-        return `<li>${sev} ${sec}: ${msg}</li>`;
-      }).join('');
-      issuesBlock = `<div><h4>Issues</h4><ul>${items}</ul></div>`;
-    }
+    const title = ev.title ? Utils.escapeHtml(String(ev.title)) : 'Evaluation';
+    const descHtml = ev.description
+      ? `<p class="eval-summary">${Utils.escapeHtml(String(ev.description))}</p>`
+      : '';
 
-    if (pieces.length === 0 && !issuesBlock) {
-      pieces.push(`<pre><code class="language-json">${Utils.escapeHtml(JSON.stringify(ev, null, 2))}</code></pre>`);
-    }
+    const SKIP = new Set(['title', 'value', 'description']);
+    const rows = Object.entries(ev)
+      .filter(([k]) => !SKIP.has(k))
+      .map(([k, v]) => `
+        <tr>
+          <th class="eval-detail-key">${_evalFieldLabel(k)}</th>
+          <td class="eval-detail-val">${_evalFormatValue(k, v)}</td>
+        </tr>`).join('');
 
-    card.innerHTML = `<h3>Evaluation ${idx + 1}</h3>` + pieces.join('') + issuesBlock;
+    card.innerHTML = `
+      <div class="eval-card-header">
+        <h3 class="eval-title">${title}</h3>
+        ${valHtml}
+      </div>
+      ${descHtml}
+      ${rows ? `<details class="eval-details"><summary>Details</summary><table class="eval-detail-table"><tbody>${rows}</tbody></table></details>` : ''}`;
+
     wrap.appendChild(card);
   });
 
