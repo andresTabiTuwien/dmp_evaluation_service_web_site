@@ -7,6 +7,11 @@ function setupBenchmarkForm() {
   const statusEl = document.getElementById('evaluate-benchmark-status');
   const resultEl = document.getElementById('evaluate-benchmark-result');
 
+  form.addEventListener('reset', () => {
+    statusEl.innerHTML = '';
+    resultEl.innerHTML = '';
+  });
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     statusEl.textContent = 'Submitting…';
@@ -39,6 +44,11 @@ function setupTestForm() {
 
   const statusEl = document.getElementById('evaluate-test-status');
   const resultEl = document.getElementById('evaluate-test-result');
+
+  form.addEventListener('reset', () => {
+    statusEl.innerHTML = '';
+    resultEl.innerHTML = '';
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
